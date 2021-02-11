@@ -17,10 +17,15 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "axios": "^0.21.1",
+    "cookie-parser": "^1.4.5",
     "express": "^4.17.1",
+    "express-handlebars": "^5.2.0",
     "http-errors": "^1.8.0",
+    "huobi-api-js": "^1.0.0",
     "pino": "^6.11.0",
     "pino-http": "^5.4.0",
-    "pino-pretty": "^4.5.0"
+    "pino-pretty": "^4.5.0",
+    "qs": "^6.9.6"
   }
 }
