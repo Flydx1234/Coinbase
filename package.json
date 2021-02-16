@@ -23,6 +23,7 @@
     "express-handlebars": "^5.2.0",
     "http-errors": "^1.8.0",
     "huobi-api-js": "^1.0.0",
+    "mongoose": "^5.11.16",
     "pino": "^6.11.0",
     "pino-http": "^5.4.0",
     "pino-pretty": "^4.5.0",

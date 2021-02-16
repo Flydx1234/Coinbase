@@ -1,11 +1,16 @@
 'use strict'
+require("./db.js");
 const express = require('express');
 const expressHbs =  require('express-handlebars');
 const path = require('path');
 const bodyParser = require('body-parser');
 const axios = require('axios');
 const qs = require('qs');
+const mongoose = require("mongoose");
+mongoose.set('useFindAndModify', false);
+const User = mongoose.model("User");
 const PORT = process.env.PORT || 3000;
+
 //coinbase api
 let client_id,client_secret,grant_type,redirect_uri;
 if(process.env.NODE_ENV === 'PRODUCTION'){
@@ -68,19 +73,41 @@ app.get("/login", (req,res)=>{
       url: "https://api.coinbase.com/oauth/token",
       data: `grant_type=authorization_code&code=${code}&client_id=${client_id}&client_secret=${client_secret}&redirect_uri=${redirect_uri}`
       }).then(response=>{
-      const user = {
-        accessToken:response.data.access_token,
-        refreshToken:response.data.refresh_token,
-      }
-      console.log("success");
+        const at = response.data.access_token;
+        const rt = response.data.refresh_token
+        axios({
+          method: "get",
+          url: "https://api.coinbase.com/v2/user",
+          headers:{
+            "Authorization": `Bearer ${at}`
+          }
+        }).then(response=>{
+          const id = response.data.data.id;
+          const user = new User({
+            _id: id,
+            accessToken:at,
+            refreshToken:rt,
+          });
+          User.countDocuments({_id:id},(err,count)=>{
+            if(err) throw (err);
+            if(count === 0){
+              user.save(err=>{
+                if(err) throw (err);
+              });
+            }
+            res.cookie('userId', id);
+            res.redirect("/");
+          });
+        }).catch(err=>{
+          console.log(err);
+        });
     }).catch((err)=>{
-      console.log(err.response);
+      console.log(err);
     });
   }
   else{
     res.redirect("/authorize");
   }
-  res.redirect("/");
 });
 
 
